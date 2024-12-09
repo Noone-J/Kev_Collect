@@ -77,4 +77,26 @@ class Produit
 
         return $this;
     }
+
+    // public function estDisponible(int $quantiteDemandee): bool
+    // {
+    //     $stock = $this->getStock();
+        
+    //     if (!$stock) {
+    //         return false;
+    //     }
+        
+    //     return $stock->getQuantiteStock() >= $quantiteDemandee;
+    // }
+
+    // private function getStock(): ?Stock
+    // {
+    //     // Implémentez ici la logique pour récupérer le stock correspondant au produit
+    //     // Par exemple, vous pourriez utiliser Doctrine pour récupérer le stock par ID du produit
+    //     // Retournez null si aucun stock n'est trouvé
+    //     $total = 0;
+    //     foreach($this->$produit as $produit){
+
+    //     }
+    // }
 }

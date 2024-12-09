@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -39,6 +41,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?int $Num = null;
+
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'leUser')]
+    private Collection $LesCommande;
+
+    public function __construct()
+    {
+        $this->LesCommande = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -147,6 +160,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNum(?int $Num): static
     {
         $this->Num = $Num;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getLesCommande(): Collection
+    {
+        return $this->LesCommande;
+    }
+
+    public function addLesCommande(Commande $lesCommande): static
+    {
+        if (!$this->LesCommande->contains($lesCommande)) {
+            $this->LesCommande->add($lesCommande);
+            $lesCommande->setLeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesCommande(Commande $lesCommande): static
+    {
+        if ($this->LesCommande->removeElement($lesCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($lesCommande->getLeUser() === $this) {
+                $lesCommande->setLeUser(null);
+            }
+        }
 
         return $this;
     }
