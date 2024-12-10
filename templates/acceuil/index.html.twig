@@ -5,7 +5,13 @@
 {% block body %}
 
 {% block nav %}
-    {% include 'layouts/navadmin.html.twig' %}
+    {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+        {% include 'layouts/navadmin.html.twig' %}
+    {% elseif app.user %}
+        {% include 'layouts/navclient.html.twig' %}
+    {% else %}
+        {% include 'layouts/navacceuil.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 <div class="container">
