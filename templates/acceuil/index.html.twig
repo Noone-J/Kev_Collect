@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AcceuilController!{% endblock %}
+
+{% block body %}
+
+{% block nav %}
+    {% include 'layouts/navadmin.html.twig' %}
+{% endblock %}
+
+<div class="container">
+    
+    <h1>Produits</h1>
+
+    <div class="row">
+        {% for produit in produits %}
+            <div class="col-md-3 mt-4">
+                <div class="card" style="width: 18rem;">
+                    <img src="{{asset('uploads/images/'~produit.image)}}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <a style="text-decoration: none; color: green" href="{{ path('app_produit_info',{'id':produit.id})}}"><h5 class="card-title">{{ produit.libeller }}</h5></a>
+                        <p class="card-text">{{ produit.description|slice(0,50) }}</p>
+                        <a href="#" class="btn btn-outline-success">Ajouter aux panier</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

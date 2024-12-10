@@ -1,14 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProduitController!{% endblock %}
+{% block title %}Produit index{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-</div>
+    {% block nav %}
+        {% include 'layouts/navadmin.html.twig' %}
+    {% endblock %}
+
+    <div class="container"> 
+        <h1>Produits</h1> 
+        {% include 'layouts/_flash_mssage.html.twig' %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Libeller</th>
+                    <th>Description</th>
+                    <th>Prix Unitaire</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for produit in produits %}
+                <tr>
+                    <td>{{ produit.id }}</td>
+                    <td>{{ produit.libeller }}</td>
+                    <td>{{ produit.description|slice(0,80) }}</td>
+                    <td>{{ produit.prixUnitaire }}</td>
+                    <td>
+                        <a href="{{ path('app_produit_show', {'id': produit.id}) }}" class="btn btn-primary">Info</a>
+                        <a href="{{ path('app_produit_edit', {'id': produit.id}) }}" class="btn btn-outline-success">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun produit n'a été enregistrer</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_produit_new') }}" class="btn btn-outline-success">Ajouter un produit</a>
+    </div>
 {% endblock %}

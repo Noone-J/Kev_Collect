@@ -3,35 +3,104 @@
 namespace App\Controller;
 
 use App\Entity\Produit;
-
+use App\Form\ProduitType;
+use App\Repository\ProduitRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
-
-class ProduitController extends AbstractController
+#[Route('/produit')]
+final class ProduitController extends AbstractController
 {
-    #[Route('/produit', name: 'app_produit')]
-    public function list(): Response
+    #[Route(name: 'app_produit_index', methods: ['GET'])]
+    public function index(ProduitRepository $produitRepository): Response
     {
         return $this->render('produit/index.html.twig', [
-            'controller_name' => 'ProduitController',
+            'produits' => $produitRepository->findAll(),
         ]);
     }
-    
-    #[Route('/produit/CreerProduit', name: 'app_produit_creer_produit')]
-    public function CreerProduit(EntityManagerInterface $entityManager): Response
+
+    #[Route('/new', name: 'app_produit_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        $produit = new Produit();
+        $form = $this->createForm(ProduitType::class, $produit);
+        $form->handleRequest($request);
 
-        $produit1 = new Produit();
-        $produit1->setLibeller("Coca");
-        $produit1->setDescription("Soda");
-        $produit1->setPrixUnitaire("2");
-        $entityManager->persist($produit1);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->get('image')->getData();
 
-        $entityManager->flush();
+            if ($image){
+                $nomImage = pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME);
+                $safeFileName = $slugger->slug($nomImage);
+                $newFileNom = $safeFileName.'-'.uniqid().'.'.$image->guessExtension();
 
-        return new Response("ok"); 
+                try{
+                    $image->move(
+                        $this->getParameter('image_dir'),
+                        $newFileNom
+                    );
+                }catch (FileException $exception){}
+
+                $produit->setImage($newFileNom);
+            }
+            $entityManager->persist($produit);
+            $entityManager->flush();
+
+            $this->addFlash(type:'success', message:'Votre produit a bien été ajouté !');
+
+            return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('produit/new.html.twig', [
+            'produit' => $produit,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_produit_show', methods: ['GET'])]
+    public function show(Produit $produit): Response
+    {
+        return $this->render('produit/show.html.twig', [
+            'produit' => $produit,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_produit_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ProduitType::class, $produit);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            
+            $this->addFlash(type:'success', message:'Votre produit a bien été modifier !');
+
+            return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('produit/edit.html.twig', [
+            'produit' => $produit,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_produit_delete', methods: ['POST'])]
+    public function delete(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$produit->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($produit);
+            $entityManager->flush();
+
+            $this->addFlash(type:'danger', message:'Votre produit a bien été supprimer !');
+
+        }
+
+        return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
 }

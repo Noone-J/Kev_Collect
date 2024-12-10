@@ -1,0 +1,7 @@
+{{ form_start(form) }}
+    {{ form_row(form.libeller,{'attr':{'class':'form form-control'}}) }}
+    {{ form_row(form.description,{'attr':{'class':'form form-control'}}) }}
+    {{ form_row(form.prix_unitaire,{'attr':{'class':'form form-control'}}) }}
+    {{ form_row(form.image,{'attr':{'class':'form'}}) }}<br>
+    <button class="btn btn-outline-success">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
