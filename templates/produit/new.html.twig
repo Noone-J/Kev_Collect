@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un produit{% endblock %}
+
+{% block body %}
+
+    {% block nav %}
+        {% include 'layouts/navadmin.html.twig' %}
+    {% endblock %}
+
+    <div class="container">
+        <h1>Ajouter un nouveau produit</h1>
+
+        {{ include('produit/_form.html.twig') }}
+
+        <a href="{{ path('app_produit_index') }}" class="btn btn-primary">Retour à la liste</a>
+    </div>
+{% endblock %}
