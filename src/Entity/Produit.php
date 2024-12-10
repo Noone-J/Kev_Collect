@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProduitRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
@@ -22,8 +24,19 @@ class Produit
     #[ORM\Column]
     private ?int $prix_unitaire = null;
 
+    /**
+     * @var Collection<int, Stock>
+     */
+    #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'leProduit')]
+    private Collection $lesStock;
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
+
+    public function __construct()
+    {
+        $this->lesStock = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -66,6 +79,51 @@ class Produit
         return $this;
     }
 
+    /**
+     * @return Collection<int, Stock>
+     */
+    public function getLesStock(): Collection
+    {
+        return $this->lesStock;
+    }
+
+    public function addLesStock(Stock $lesStock): static
+    {
+        if (!$this->lesStock->contains($lesStock)) {
+            $this->lesStock->add($lesStock);
+            $lesStock->setLeProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesStock(Stock $lesStock): static
+    {
+        if ($this->lesStock->removeElement($lesStock)) {
+            // set the owning side to null (unless already changed)
+            if ($lesStock->getLeProduit() === $this) {
+                $lesStock->setLeProduit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function estDisponible(int $quantiteDemandee): bool
+    {
+        $quantiteTotale = $this->getQuantiteTotaleStock();
+        return $quantiteTotale >= $quantiteDemandee;
+    }
+
+    private function getQuantiteTotaleStock(): int
+    {
+        $total = 0;
+        foreach ($this->getLesStock() as $stock) {
+            $total += $stock->getQuantiteStock();
+        }
+        return $total;
+    }
+
     public function getImage(): ?string
     {
         return $this->image;
@@ -77,4 +135,5 @@ class Produit
 
         return $this;
     }
+
 }
