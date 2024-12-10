@@ -4,15 +4,15 @@
 
 {% block body %}
 
-{% block nav %}
-    {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
-        {% include 'layouts/navadmin.html.twig' %}
-    {% elseif app.user %}
-        {% include 'layouts/navclient.html.twig' %}
-    {% else %}
-        {% include 'layouts/navacceuil.html.twig' %}
-    {% endif %}
-{% endblock %}
+    {% block nav %}
+        {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+            {% include 'layouts/navadmin.html.twig' %}
+        {% elseif app.user %}
+            {% include 'layouts/navclient.html.twig' %}
+        {% else %}
+            {% include 'layouts/navacceuil.html.twig' %}
+        {% endif %}
+    {% endblock %}
 
 <div class="container">
     
@@ -26,6 +26,7 @@
                     <div class="card-body">
                         <a style="text-decoration: none; color: green" href="{{ path('app_produit_info',{'id':produit.id})}}"><h5 class="card-title">{{ produit.libeller }}</h5></a>
                         <p class="card-text">{{ produit.description|slice(0,50) }}</p>
+                        <h3>{{ produit.prixunitaire }} €</h3>
                         <a href="#" class="btn btn-outline-success">Ajouter aux panier</a>
                     </div>
                 </div>
