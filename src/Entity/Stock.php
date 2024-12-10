@@ -16,8 +16,8 @@ class Stock
     #[ORM\Column]
     private ?int $quantite_stock = null;
 
-    #[ORM\ManyToOne]
-    private ?produit $leProduit = null;
+    #[ORM\ManyToOne(inversedBy: 'lesStock')]
+    private ?Produit $leProduit = null;
 
     public function getId(): ?int
     {
@@ -36,15 +36,16 @@ class Stock
         return $this;
     }
 
-    public function getLeProduit(): ?produit
+    public function getLeProduit(): ?Produit
     {
         return $this->leProduit;
     }
 
-    public function setLeProduit(?produit $leProduit): static
+    public function setLeProduit(?Produit $leProduit): static
     {
         $this->leProduit = $leProduit;
 
         return $this;
     }
+
 }
