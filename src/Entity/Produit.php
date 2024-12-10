@@ -22,6 +22,9 @@ class Produit
     #[ORM\Column]
     private ?int $prix_unitaire = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Produit
     public function setPrixUnitaire(int $prix_unitaire): static
     {
         $this->prix_unitaire = $prix_unitaire;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
