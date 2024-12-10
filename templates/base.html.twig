@@ -12,7 +12,7 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             {{ encore_entry_script_tags('bootstrap') }}
-            {{ stimulus_entry_tags() }}
+            {# {{ stimulus_entry_tags() }} #}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
