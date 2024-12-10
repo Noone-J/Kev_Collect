@@ -24,14 +24,14 @@ class Produit
     #[ORM\Column]
     private ?int $prix_unitaire = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
-
     /**
      * @var Collection<int, Stock>
      */
     #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'leProduit')]
     private Collection $lesStock;
+
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
 
     public function __construct()
     {
@@ -79,18 +79,6 @@ class Produit
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Stock>
      */
@@ -134,6 +122,18 @@ class Produit
             $total += $stock->getQuantiteStock();
         }
         return $total;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
     }
 
 }
