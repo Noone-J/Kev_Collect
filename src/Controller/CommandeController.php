@@ -45,7 +45,7 @@ final class CommandeController extends AbstractController
     }
 
     #[Route('/setPrixTotal/{id}', name: 'app_commande_set_prix_total', methods: ['GET', 'POST'])]
-    public function setPrixTotal(Commande $commande): Response
+    public function setPrixTotal(Commande $commande, EntityManagerInterface $entityManager): Response
     {
         $commandeTotaux = 0;
         
@@ -55,7 +55,7 @@ final class CommandeController extends AbstractController
         
         $commande->setPrixCommande($commandeTotaux);
         
-        $this->getDoctrine()->getManager()->flush();
+        $entityManager->flush();
         
         return $this->redirectToRoute('app_commande_show', ['id' => $commande->getId()], Response::HTTP_SEE_OTHER);
     }
