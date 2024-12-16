@@ -33,9 +33,16 @@ class Produit
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    /**
+     * @var Collection<int, DetailCommande>
+     */
+    #[ORM\OneToMany(targetEntity: DetailCommande::class, mappedBy: 'leProduit')]
+    private Collection $lesDetailsCommandes;
+
     public function __construct()
     {
         $this->lesStock = new ArrayCollection();
+        $this->lesDetailsCommandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -132,6 +139,36 @@ class Produit
     public function setImage(string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DetailCommande>
+     */
+    public function getLesDetailsCommandes(): Collection
+    {
+        return $this->lesDetailsCommandes;
+    }
+
+    public function addLesDetailsCommande(DetailCommande $lesDetailsCommande): static
+    {
+        if (!$this->lesDetailsCommandes->contains($lesDetailsCommande)) {
+            $this->lesDetailsCommandes->add($lesDetailsCommande);
+            $lesDetailsCommande->setLeProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesDetailsCommande(DetailCommande $lesDetailsCommande): static
+    {
+        if ($this->lesDetailsCommandes->removeElement($lesDetailsCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($lesDetailsCommande->getLeProduit() === $this) {
+                $lesDetailsCommande->setLeProduit(null);
+            }
+        }
 
         return $this;
     }

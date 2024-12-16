@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Commande;
+use App\Entity\Produit;
 use App\Entity\DetailCommande;
 use App\Form\DetailCommandeType;
 use App\Repository\DetailCommandeRepository;
@@ -14,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/detail/commande')]
 final class DetailCommandeController extends AbstractController
 {
+    // Affiche la liste des détails des commandes
     #[Route(name: 'app_detail_commande_index', methods: ['GET'])]
     public function index(DetailCommandeRepository $detailCommandeRepository): Response
     {
@@ -23,25 +26,12 @@ final class DetailCommandeController extends AbstractController
     }
 
     #[Route('/new', name: 'app_detail_commande_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): void
     {
-        $detailCommande = new DetailCommande();
-        $form = $this->createForm(DetailCommandeType::class, $detailCommande);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($detailCommande);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_detail_commande_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('detail_commande/new.html.twig', [
-            'detail_commande' => $detailCommande,
-            'form' => $form,
-        ]);
+        // Logique pour ajouter un nouveau détail de commande
     }
 
+    // Affiche un détail de commande spécifique
     #[Route('/{id}', name: 'app_detail_commande_show', methods: ['GET'])]
     public function show(DetailCommande $detailCommande): Response
     {
@@ -50,6 +40,7 @@ final class DetailCommandeController extends AbstractController
         ]);
     }
 
+    // Modifie un détail de commande existant
     #[Route('/{id}/edit', name: 'app_detail_commande_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, DetailCommande $detailCommande, EntityManagerInterface $entityManager): Response
     {
@@ -68,6 +59,7 @@ final class DetailCommandeController extends AbstractController
         ]);
     }
 
+    // Supprime un détail de commande
     #[Route('/{id}', name: 'app_detail_commande_delete', methods: ['POST'])]
     public function delete(Request $request, DetailCommande $detailCommande, EntityManagerInterface $entityManager): Response
     {
@@ -78,7 +70,4 @@ final class DetailCommandeController extends AbstractController
 
         return $this->redirectToRoute('app_detail_commande_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    
-
 }
