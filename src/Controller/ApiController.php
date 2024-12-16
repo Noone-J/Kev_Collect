@@ -18,14 +18,24 @@ class ApiController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Route pour récupérer tous les produits
+     *
+     * @Route("/api/getProduit", name="app_api_Produit_get_all", methods={"GET"})
+     */
     #[Route('/api/getProduit', name: 'app_api_Produit_get_all', methods: ['GET'])]
     public function getAllEncheres(): JsonResponse
     {
         return $this->fetchAllProduits();
     }
 
+
+    //  Méthode privée pour récupérer tous les produit
+    //  @return JsonResponse
+
     private function fetchAllProduits(): JsonResponse
     {
+        $Produits = $this->entityManager->getRepository(Produit::class)->findAll();
         $Produits = $this->entityManager->getRepository(Produit::class)->findAll();
 
         $data = [];
@@ -39,7 +49,7 @@ class ApiController extends AbstractController
                 'image' => $Produit->getImage(),
             ];
         }
-
+        // Création et retour d'une réponse JSON contenant les données des produits
         return new JsonResponse($data);
     }
 }

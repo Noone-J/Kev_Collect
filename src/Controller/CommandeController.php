@@ -174,39 +174,58 @@ final class CommandeController extends AbstractController
         return $this->redirectToRoute('app_commande_afficher_panier');
     }
 
-//     /**
-//  * Modifie la quantité d'un produit dans le panier.
-//  *
-//  * @param DetailCommande $detailCommande
-//  * @param Request $request
-//  * @return JsonResponse
-//  */
-// public function modifierQuantite(DetailCommande $detailCommande, Request $request): JsonResponse
-// {
-//     $nouvelleQuantite = $request->request->get('nouvelleQuantite');
+    /**
+     * Méthode pour modifier la quantité d'un produit dans le panier
+     *
+     * @param DetailCommande $detailCommande L'objet DetailCommande à modifier
+     * @param Request $request La requête HTTP contenant les données de modification
+     * @return JsonResponse Réponse JSON indiquant le résultat de l'opération
+     */
+    public function modifierQuantite(DetailCommande $detailCommande, Request $request): JsonResponse
+    {
+        // Récupération de la nouvelle quantité depuis la requête
+        $nouvelleQuantite = $request->request->get('nouvelleQuantite');
 
-//     if ($nouvelleQuantite > 0) {
-//         $detailCommande->setQuantite($nouvelleQuantite);
-//         $detailCommande->setPrixQuantite($detailCommande->getLeProduit()->getPrixUnitaire() * $nouvelleQuantite);
+        // Vérification si la nouvelle quantité est positive
+        if ($nouvelleQuantite > 0) {
+            // Modification de la quantité du détail de commande
+            $detailCommande->setQuantite($nouvelleQuantite);
+            
+            // Recalcule du prix total basé sur la nouvelle quantité
+            $detailCommande->setPrixQuantite($detailCommande->getLeProduit()->getPrixUnitaire() * $nouvelleQuantite);
+
+            // Sauvegarde des modifications en base de données
+            $this->entityManager->flush();
+
+            // Retour d'une réponse JSON réussie
+            return new JsonResponse(['message' => 'Quantité modifiée avec succès'], 200);
+        }
+
+        // Si la quantité n'est pas positive, retour d'une erreur
+        return new JsonResponse(['error' => 'La quantité doit être positive'], 400);
+    }
+
+    /**
+     * Route pour supprimer un produit du panier
+     *
+     * @Route("/panier/supprimer-produit/{id}", name="app_detail_commande_supprimer_produit")
+     */
+    public function supprimerProduitDuPanier(DetailCommande $detailCommande): Response
+    {
+        // Récupération de la commande associée au détail de commande
+        $commande = $detailCommande->getLaCommande();
         
-//         $this->entityManager->flush();
+        $commande->removeLesDetailsCommande($detailCommande);
+        
+        // Suppression du détail de commande de la commande
 
-//         return new JsonResponse(['message' => 'Quantité modifiée avec succès'], 200);
-//     }
+        // Suppression du détail de commande de la base de données
+        $this->entityManager->remove($detailCommande);
+        
+        // Sauvegarde des modifications en base de données
+        $this->entityManager->flush();
 
-//     return new JsonResponse(['error' => 'La quantité doit être positive'], 400);
-// }
-
-
-//     #[Route('/panier/supprimer-produit/{id}', name: 'app_detail_commande_supprimer_produit')]
-//     public function supprimerProduitDuPanier(DetailCommande $detailCommande): Response
-//     {
-//         $commande = $detailCommande->getLaCommande();
-//         $commande->removeLesDetailsCommande($detailCommande);
-
-//         $this->entityManager->remove($detailCommande);
-//         $this->entityManager->flush();
-
-//         return $this->redirectToRoute('app_commande_afficher_panier');
-//     }
+        // Redirection vers la page du panier après suppression
+        return $this->redirectToRoute('app_commande_afficher_panier');
+    }
 }
