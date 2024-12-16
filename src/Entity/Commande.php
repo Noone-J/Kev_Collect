@@ -5,8 +5,8 @@ namespace App\Entity;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
@@ -17,26 +17,24 @@ class Commande
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    private \DateTimeInterface $date;
 
-    #[ORM\Column]
-    private ?int $prix_commande = null;
+    #[ORM\Column(nullable: false)]
+    private int $prixCommande = 0;
 
-    #[ORM\ManyToOne(inversedBy: 'LesCommande')]
-    private ?User $leUser = null;
-
-    #[ORM\ManyToOne(inversedBy: 'lesCommande')]
+    #[ORM\ManyToOne(targetEntity: Statut::class)]
     private ?Statut $leStatut = null;
 
-    /**
-     * @var Collection<int, DetailCommande>
-     */
-    #[ORM\OneToMany(targetEntity: DetailCommande::class, mappedBy: 'laCommande')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $leUser = null;
+
+    #[ORM\OneToMany(mappedBy: 'laCommande', targetEntity: DetailCommande::class, cascade: ['persist'])]
     private Collection $lesDetailsCommande;
 
     public function __construct()
     {
         $this->lesDetailsCommande = new ArrayCollection();
+        $this->date = new \DateTime();
     }
 
     public function getId(): ?int
@@ -49,22 +47,25 @@ class Commande
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
-
         return $this;
     }
 
     public function getPrixCommande(): ?int
     {
-        return $this->prix_commande;
+        return $this->prixCommande;
     }
 
-    public function setPrixCommande(int $prix_commande): static
+    public function getLeStatut(): ?Statut
     {
-        $this->prix_commande = $prix_commande;
+        return $this->leStatut;
+    }
 
+    public function setLeStatut(?Statut $leStatut): self
+    {
+        $this->leStatut = $leStatut;
         return $this;
     }
 
@@ -73,22 +74,9 @@ class Commande
         return $this->leUser;
     }
 
-    public function setLeUser(?User $leUser): static
+    public function setLeUser(?User $leUser): self
     {
         $this->leUser = $leUser;
-
-        return $this;
-    }
-
-    public function getLeStatut(): ?Statut
-    {
-        return $this->leStatut;
-    }
-
-    public function setLeStatut(?Statut $leStatut): static
-    {
-        $this->leStatut = $leStatut;
-
         return $this;
     }
 
@@ -100,25 +88,40 @@ class Commande
         return $this->lesDetailsCommande;
     }
 
-    public function addLesDetailsCommande(DetailCommande $lesDetailsCommande): static
+    public function addLesDetailsCommande(DetailCommande $detailCommande): self
     {
-        if (!$this->lesDetailsCommande->contains($lesDetailsCommande)) {
-            $this->lesDetailsCommande->add($lesDetailsCommande);
-            $lesDetailsCommande->setLaCommande($this);
+        if (!$this->lesDetailsCommande->contains($detailCommande)) {
+            $this->lesDetailsCommande->add($detailCommande);
+            $detailCommande->setLaCommande($this);
         }
-
+        $this->calculerPrixTotal();
         return $this;
     }
 
-    public function removeLesDetailsCommande(DetailCommande $lesDetailsCommande): static
+    public function removeLesDetailsCommande(DetailCommande $detailCommande): self
     {
-        if ($this->lesDetailsCommande->removeElement($lesDetailsCommande)) {
+        if ($this->lesDetailsCommande->removeElement($detailCommande)) {
             // set the owning side to null (unless already changed)
-            if ($lesDetailsCommande->getLaCommande() === $this) {
-                $lesDetailsCommande->setLaCommande(null);
+            if ($detailCommande->getLaCommande() === $this) {
+                $detailCommande->setLaCommande(null);
             }
         }
+        $this->calculerPrixTotal();
+        return $this;
+    }
 
+    public function calculerPrixTotal()
+    {
+        $prixTotal = 0;
+        foreach ($this->lesDetailsCommande as $detail) {
+            $prixTotal += $detail->getPrixQuantite();
+        }
+        $this->setPrixCommande($prixTotal);
+    }
+
+    public function setPrixCommande(int $prixCommande): self
+    {
+        $this->prixCommande = $prixCommande;
         return $this;
     }
 }

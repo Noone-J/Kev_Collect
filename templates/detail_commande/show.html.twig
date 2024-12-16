@@ -1,30 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}DetailCommande{% endblock %}
+{% block title %}Détail de commande {{ detail_commande.id }}{% endblock %}
 
 {% block body %}
-    <h1>DetailCommande</h1>
+    <h1>Détail de commande {{ detail_commande.id }}</h1>
 
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ detail_commande.id }}</td>
+                <th>Produit</th>
+                <td>{{ detail_commande.leProduit.libeller }}</td>
             </tr>
             <tr>
-                <th>Quantite</th>
+                <th>Quantité</th>
                 <td>{{ detail_commande.quantite }}</td>
             </tr>
             <tr>
-                <th>Prix_quantite</th>
-                <td>{{ detail_commande.prixQuantite }}</td>
+                <th>Prix unitaire</th>
+                <td>{{ detail_commande.leProduit.prixUnitaire }} €</td>
+            </tr>
+            <tr>
+                <th>Prix total</th>
+                <td>{{ detail_commande.prixQuantite }} €</td>
+            </tr>
+            <tr>
+                <th>Commande associée</th>
+                <td>
+                    <a href="{{ path('app_commande_show', {'id': detail_commande.laCommande.id}) }}">Voir commande {{ detail_commande.laCommande.id }}</a>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_detail_commande_index') }}">back to list</a>
-
-    <a href="{{ path('app_detail_commande_edit', {'id': detail_commande.id}) }}">edit</a>
-
-    {{ include('detail_commande/_delete_form.html.twig') }}
+    <a href="{{ path('app_detail_commande_index') }}">Retour à la liste des détails de commande</a>
 {% endblock %}

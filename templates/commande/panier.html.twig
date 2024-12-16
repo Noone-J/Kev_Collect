@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre panier{% endblock %}
+
+{% block body %}
+    <h1>Votre panier</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Prix total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in commande.lesDetailsCommande %}
+                <tr>
+                    <td>{{ detail.leProduit.libeller }}</td>
+                    <td>{{ detail.quantite }}</td>
+                    <td>{{ detail.leProduit.prixUnitaire }} €</td>
+                    <td>{{ detail.prixQuantite }} €</td>
+                    <td>
+                        <form action="{{ path('app_detail_commande_modifier_quantite', {'id': detail.id}) }}" method="post">
+                            <input type="number" name="nouvelleQuantite" value="{{ detail.quantite }}" min="1">
+                            <button type="submit">Modifier</button>
+                        </form>
+                    <td>
+                        <form action="{{ path('app_detail_commande_supprimer_produit', {'id': detail.id}) }}" method="post">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Total : {{ commande.prixCommande }} €</p>
+
+    <a href="{{ path('app_produit_index') }}">Continuer les achats</a>
+    <a href="{{ path('app_commande_show', {'id': commande.id}) }}">Voir les détails de la commande</a>
+{% endblock %}

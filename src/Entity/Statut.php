@@ -16,23 +16,17 @@ class Statut
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $libeller = null;
+    private ?string $libelle = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    /**
-     * @var Collection<int, Commande>
-     */
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'leStatut')]
-    private Collection $lesCommande;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?HistoriqueStatut $leHistoriqueStatut = null;
+    #[ORM\OneToMany(mappedBy: 'leStatut', targetEntity: Commande::class)]
+    private Collection $commandes;
 
     public function __construct()
     {
-        $this->lesCommande = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -40,15 +34,14 @@ class Statut
         return $this->id;
     }
 
-    public function getLibeller(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->libeller;
+        return $this->libelle;
     }
 
-    public function setLibeller(string $libeller): static
+    public function setLibelle(string $libelle): self
     {
-        $this->libeller = $libeller;
-
+        $this->libelle = $libelle;
         return $this;
     }
 
@@ -57,53 +50,36 @@ class Statut
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
 
     /**
      * @return Collection<int, Commande>
      */
-    public function getLesCommande(): Collection
+    public function getCommandes(): Collection
     {
-        return $this->lesCommande;
+        return $this->commandes;
     }
 
-    public function addLesCommande(Commande $lesCommande): static
+    public function addCommande(Commande $commande): self
     {
-        if (!$this->lesCommande->contains($lesCommande)) {
-            $this->lesCommande->add($lesCommande);
-            $lesCommande->setLeStatut($this);
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setLeStatut($this);
         }
-
         return $this;
     }
 
-    public function removeLesCommande(Commande $lesCommande): static
+    public function removeCommande(Commande $commande): self
     {
-        if ($this->lesCommande->removeElement($lesCommande)) {
-            // set the owning side to null (unless already changed)
-            if ($lesCommande->getLeStatut() === $this) {
-                $lesCommande->setLeStatut(null);
+        if ($this->commandes->removeElement($commande)) {
+            if ($commande->getLeStatut() === $this) {
+                $commande->setLeStatut(null);
             }
         }
-
         return $this;
     }
-
-    public function getLeHistoriqueStatut(): ?HistoriqueStatut
-    {
-        return $this->leHistoriqueStatut;
-    }
-
-    public function setLeHistoriqueStatut(?HistoriqueStatut $leHistoriqueStatut): static
-    {
-        $this->leHistoriqueStatut = $leHistoriqueStatut;
-
-        return $this;
-    }
-
 }

@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panier vide{% endblock %}
+
+{% block body %}
+    <h1>Votre panier est vide</h1>
+    <p>Vous n'avez actuellement aucun produit dans votre panier.</p>
+    <a href="{{ path('app_produit_index') }}">Retour à la liste des produits</a>
+{% endblock %}

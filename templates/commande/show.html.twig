@@ -1,30 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commande{% endblock %}
+{% block title %}Commande {{ commande.id }}{% endblock %}
 
 {% block body %}
-    <h1>Commande</h1>
+    <h1>Commande {{ commande.id }}</h1>
 
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ commande.id }}</td>
-            </tr>
-            <tr>
                 <th>Date</th>
-                <td>{{ commande.date ? commande.date|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
+                <td>{{ commande.date|date('Y-m-d H:i:s') }}</td>
             <tr>
-                <th>Prix_commande</th>
-                <td>{{ commande.prixCommande }}</td>
+                <th>Prix total</th>
+                <td>{{ commande.prixCommande }} €</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_commande_index') }}">back to list</a>
+    <h2>Détails de la commande</h2>
 
-    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">edit</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Prix total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in commande.lesDetailsCommande %}
+                <tr>
+                    <td>{{ detail.leProduit.libelle }}</td>
+                    <td>{{ detail.quantite }}</td>
+                    <td>{{ detail.leProduit.prixUnitaire }} €</td>
+                    <td>{{ detail.prixQuantite }} €</td>
+                    <td>
+                        <a href="{{ path('app_detail_commande_show', {'id': detail.id}) }}">Voir détails</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    {{ include('commande/_delete_form.html.twig') }}
+    <a href="{{ path('app_commande_index') }}">Retour à la liste des commandes</a>
 {% endblock %}

@@ -27,7 +27,7 @@
                         <a style="text-decoration: none; color: green" href="{{ path('app_produit_info',{'id':produit.id})}}"><h5 class="card-title">{{ produit.libeller }}</h5></a>
                         <p class="card-text">{{ produit.description|slice(0,50) }}</p>
                         <h3>{{ produit.prixunitaire }} €</h3>
-                        <a href="{{ path('app_commande_new')}}" class="btn btn-outline-success">Ajouter aux panier</a>
+                        <a href="{{ path('app_commande_ajouter_produit', {'id': produit.id}) }}" class="btn btn-primary">Ajouter au panier</a>
                     </div>
                 </div>
             </div>

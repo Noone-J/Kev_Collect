@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\ProduitRepository;
+use App\Entity\DetailCommande;
+use App\Entity\Stock;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,17 +26,24 @@ class Produit
     #[ORM\Column]
     private ?int $prix_unitaire = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
+    /**
+     * @var Collection<int, DetailCommande>
+     */
+    #[ORM\OneToMany(mappedBy: 'leProduit', targetEntity: DetailCommande::class)]
+    private Collection $lesDetailsCommande;
+
     /**
      * @var Collection<int, Stock>
      */
     #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'leProduit')]
     private Collection $lesStock;
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
-
     public function __construct()
     {
+        $this->lesDetailsCommande = new ArrayCollection();
         $this->lesStock = new ArrayCollection();
     }
 
@@ -136,4 +145,25 @@ class Produit
         return $this;
     }
 
+    public function addLesDetailsCommande(DetailCommande $lesDetailsCommande): self
+    {
+        if (!$this->lesDetailsCommande->contains($lesDetailsCommande)) {
+            $this->lesDetailsCommande->add($lesDetailsCommande);
+            $lesDetailsCommande->setLeProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesDetailsCommande(DetailCommande $lesDetailsCommande): self
+    {
+        if ($this->lesDetailsCommande->removeElement($lesDetailsCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($lesDetailsCommande->getLeProduit() === $this) {
+                $lesDetailsCommande->setLeProduit(null);
+            }
+        }
+
+        return $this;
+    }
 }
