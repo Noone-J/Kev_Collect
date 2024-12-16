@@ -19,6 +19,7 @@
             <div class="card-body">
                 <h1 class="card-title">{{produit.libeller}}</h1>
                 <p class="card-text">{{produit.description}}</p>
+                <h3>Prix : {{ produit.prixunitaire }} €</h3>
                 <a href="" class="btn btn-success">Ajouter au panier</a>
                 <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
             </div>
@@ -35,8 +36,9 @@
                     <img src="{{asset('uploads/images/'~produit.image)}}" class="card-img-top" alt="...">
                     <div class="card-body">
                         <a style="text-decoration: none; color: green" href="{{ path('app_produit_info',{'id':produit.id})}}"><h5 class="card-title">{{ produit.libeller }}</h5></a>
-                        <p class="card-text">{{ produit.description|slice(0,50) }}</p>
-                        <a href="#" class="btn btn-outline-success">Ajouter aux panier</a>
+                        <p class="card-text">{{ produit.description|slice(0,50) }} ...</p>
+                        <h3>Prix : {{ produit.prixunitaire }} €</h3>
+                        <a href="" class="btn btn-success">Ajouter au panier</a>
                     </div>
                 </div>
             </div>
