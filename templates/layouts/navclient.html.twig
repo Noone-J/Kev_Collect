@@ -1,22 +1,52 @@
+<!-- Barre de navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
+  <!-- Conteneur pour le contenu de la barre de navigation -->
   <div class="container-fluid">
+    <!-- Logo ou titre de la marque -->
     <a class="navbar-brand" href="">KevCollect</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    
+    <!-- Bouton pour basculer la navigation sur les écrans plus petits -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" 
+            aria-controls="navbarNav" 
+            aria-expanded="false" 
+            aria-label="Basculement de navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
+    <!-- Conteneur collapsible pour les liens de navigation -->
     <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Menu principal de navigation -->
       <ul class="navbar-nav me-auto">
+        <!-- Lien actif (page actuelle) -->
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{path('app_acceuil')}}">Accueil/Produits</a>
         </li>
+        
+        <!-- Lien vers la page des commandes -->
         <li class="nav-item">
-          <a class="nav-link" href="#">Panier</a>
+          <a class="nav-link" href="#">Commande</a>
         </li>
+        
+        <!-- Commentaire : Ligne de commande du panier (commentée) -->
+        {# <li class="nav-item">
+          <a class="nav-link" href="{{path('app_commande_index')}}">Panier</a>
+        </li> #}
       </ul>
+      
+      <!-- Menu secondaire de navigation -->
       <ul class="navbar-nav">
+        <!-- Lien de déconnexion -->
         <li class="nav-item">
           <a class="nav-link btn btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
         </li>
+        
+        <!-- Commentaire : Ligne pour un lien avec une icône (commentée) -->
+        {# <li class="nav-item">
+          <a href="#" class="nav-link">
+            <img ></img>
+          </a>
+        </li> #}
       </ul>
     </div>
   </div>
