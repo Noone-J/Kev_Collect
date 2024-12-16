@@ -24,7 +24,8 @@
 
     <a href="{{ path('app_commande_index') }}">back to list</a>
 
-    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">edit</a>
+    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">Modifier</a>
+    <a href="{{ path('app_commande_delete', {'id': commande.id}) }}">Supprimer</a>
 
     {{ include('commande/_delete_form.html.twig') }}
 {% endblock %}

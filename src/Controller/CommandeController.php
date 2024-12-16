@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Commande;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
+use App\Repository\StatutRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,11 +24,24 @@ final class CommandeController extends AbstractController
     }
 
     #[Route('/new', name: 'app_commande_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, CommandeRepository $commandeRepository, StatutRepository $statutRepository): Response
     {
+        // Récupérer le statut 'en cour'
+        $statutEnCour = $statutRepository->findOneBy(['libeller' => 'en cour']);
+
+        // Vérifier si une commande 'en cour' existe déjà
+        $commandeEnCour = $commandeRepository->findOneBy(['leStatut' => $statutEnCour]);
+
+        if ($commandeEnCour) {
+            return $this->render('commande/show.html.twig', [
+                'commande' => $commandeEnCour,
+            ]);
+    }
+
         $commande = new Commande();
         $commande->setDate(new \DateTime());
         $commande->setPrixCommande(0);
+        $commande->setLeStatut($statutEnCour);
 
         $form = $this->createForm(CommandeType::class, $commande);
         $form->handleRequest($request);
@@ -35,6 +49,8 @@ final class CommandeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($commande);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Votre commande a bien été créée !');
 
             return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
         }
